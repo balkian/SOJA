@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import es.upm.dit.gsi.jason.utils.CollectionUtils;
 import es.upm.dit.gsi.sojason.services.nlu.NLUConnector;
+import es.upm.dit.gsi.sojason.services.socketio.SocketIOConnector;
 import es.upm.dit.gsi.sojason.services.travel.RenfeScrapper;
 
 /**
@@ -26,12 +27,15 @@ public class Web40Model extends SOModel{
 
 	/** */
 	public final static String NLU_SERVICE_URL = "http://46.4.52.82:3333/nlu";
+	public final static String SOCKET_SERVICE_URL = "http://localhost:3000";
+
 	/** */
 	private NLUConnector nluConnector;
 	/** */
 	private RenfeScrapper renfeScrapper;
 	/** */
 	private Logger logger = Logger.getLogger("Web40SOJason." + Web40Model.class.getName());
+	private SocketIOConnector socketConnector;
 	
 	/** Constructor 
 	 * @throws IOException */
@@ -39,6 +43,7 @@ public class Web40Model extends SOModel{
 		super();
 		this.nluConnector = new NLUConnector(NLU_SERVICE_URL);
 		this.renfeScrapper = new RenfeScrapper();
+		this.socketConnector = new SocketIOConnector(SOCKET_SERVICE_URL);
 	}
 	
 	/**
@@ -93,6 +98,35 @@ public class Web40Model extends SOModel{
 		catch (Exception e){ return false; }
 		return true;
 		
+	}
+	
+	/**
+	 * 
+	 * @param agName
+	 * @param terms
+	 * @return
+	 */
+	public boolean sendSocket (String agName, Collection<Term> params) {
+
+		logger.info("Entering sendSocket...");
+		try{
+			String[] strParams = CollectionUtils.toStringArray(params);
+			boolean serviceData = socketConnector.call(this,agName,strParams);
+			if(serviceData == false){ 
+				logger.info("Could not complete action socketIO: false!");
+				return false; 
+			}
+			
+			// put data into mailbox
+	//		this.setDataInbox(agName, serviceData);
+		} 
+		catch (Exception e){
+			logger.info("Could not complete action SocketIO (error):" + e.getCause() + "_"+e.getCause()+"_"+e.getMessage());
+			return false;	
+		}
+		
+		logger.info("SocketConnector call completed successfully");
+		return true;
 	}
 	
 }

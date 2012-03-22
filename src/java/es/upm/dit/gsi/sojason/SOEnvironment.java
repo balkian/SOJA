@@ -57,7 +57,11 @@ public class SOEnvironment extends Environment {
     		result = this.model.sendNlu(agName, terms);
     	}
     	else if (functor.equals("findTravel")) {
-    		result = this.model.findTravel(agName, terms);
+    		this.model.findTravel(agName, terms);
+    		return true;
+    	}
+    	else if (functor.equals("sendSocket")) {
+    		result = this.model.sendSocket(agName, terms);
     		return true;
     	}
         else {

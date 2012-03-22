@@ -22,26 +22,26 @@ import es.upm.dit.gsi.jason.utils.NotationUtils;
  * @version Mar 22, 2012
  *
  */
-public class Journey implements Perceptable{
+public class Journey implements Perceptable {
 
 	/** The departure time of the journey */
 	private String departureTime;
-	
+
 	/** The arrival time of the journey */
 	private String arrivalTime;
-	
-	/** 
-	 * The duration of the journey. This is not simply the difference of the 
+
+	/**
+	 * The duration of the journey. This is not simply the difference of the
 	 * departure and arrival time because of timezone considerations.
 	 */
 	private String duration;
-	
+
 	/** The origin */
 	private String origin;
 
 	/** The destination */
 	private String destination;
-	
+
 	/** The fee map that contains the different available fee */
 	private Map<String, String> fares;
 	
@@ -56,7 +56,8 @@ public class Journey implements Perceptable{
 	}
 
 	/**
-	 * @param departureTime the departureTime to set
+	 * @param departureTime
+	 *            the departureTime to set
 	 */
 	public void setDepartureTime(String departureTime) {
 		this.departureTime = departureTime;
@@ -70,7 +71,8 @@ public class Journey implements Perceptable{
 	}
 
 	/**
-	 * @param arrivalTime the arrivalTime to set
+	 * @param arrivalTime
+	 *            the arrivalTime to set
 	 */
 	public void setArrivalTime(String arrivalTime) {
 		this.arrivalTime = arrivalTime;
@@ -84,7 +86,8 @@ public class Journey implements Perceptable{
 	}
 
 	/**
-	 * @param duration the duration to set
+	 * @param duration
+	 *            the duration to set
 	 */
 	public void setDuration(String duration) {
 		this.duration = duration;
@@ -98,7 +101,8 @@ public class Journey implements Perceptable{
 	}
 
 	/**
-	 * @param oringin the oringin to set
+	 * @param oringin
+	 *            the oringin to set
 	 */
 	public void setOrigin(String origin) {
 		this.origin = origin;
@@ -112,7 +116,8 @@ public class Journey implements Perceptable{
 	}
 
 	/**
-	 * @param destination the destination to set
+	 * @param destination
+	 *            the destination to set
 	 */
 	public void setDestination(String destination) {
 		this.destination = destination;
@@ -126,7 +131,8 @@ public class Journey implements Perceptable{
 	}
 
 	/**
-	 * @param fares the fares to set
+	 * @param fares
+	 *            the fares to set
 	 */
 	public void setFares(Map<String, String> fares) {
 		this.fares = fares;
@@ -146,9 +152,9 @@ public class Journey implements Perceptable{
 		this.queryid = queryid;
 	}
 	
-	/** Textual representation of the journey. Use for debuging purposes inly.*/
+	/** Textual representation of the journey. Use for debuging purposes only. */
 	public String toString() {
-		
+
 		String toString = "From: ";
 		toString = toString.concat(origin);
 		toString = toString.concat(" (");
@@ -160,13 +166,13 @@ public class Journey implements Perceptable{
 		toString = toString.concat(") in ");
 		toString = toString.concat(duration);
 		toString = toString.concat(" for ");
-		if(fares != null)
+		if (fares != null)
 			toString = toString.concat(fares.toString());
 		else
 			toString += null;
 		return toString;
 	}
-	
+
 	/**
 	 * <p>Generates a beliefs representation of the </code>Journey</code>.
 	 * In the current implementation of {@link #toPercepts()}, the journey 
@@ -209,21 +215,21 @@ public class Journey implements Perceptable{
 		percept = percept.concat(NotationUtils.compact(this.origin));
 		percept = percept.concat(", ");
 		percept = percept.concat(NotationUtils.compact(this.destination));
-		
+
 		percept = percept.concat(", time(");
 		String digits[] = this.departureTime.split("[\\x2E\\x3A]"); // [.:]
 		percept = percept.concat(digits[0]);
 		percept = percept.concat(", ");
 		percept = percept.concat(digits[1]);
-		
+
 		percept = percept.concat("), time(");
 		digits = this.arrivalTime.split("[\\x2E\\x3A]"); // [.:]
 		percept = percept.concat(digits[0]);
 		percept = percept.concat(", ");
 		percept = percept.concat(digits[1]);
-		
+
 		percept = percept.concat("), [");
-		for(String fareName : fares.keySet()) {
+		for (String fareName : fares.keySet()) {
 			percept = percept.concat("fare(");
 			percept = percept.concat(NotationUtils.compact(fareName));
 			percept = percept.concat(", ");
@@ -238,10 +244,9 @@ public class Journey implements Perceptable{
 		percept = percept.concat(this.getQueryid());
 		percept = percept.concat(")]");
 		
-		
 		LinkedList<Literal> ret = new LinkedList<Literal>();
 		ret.add(Literal.parseLiteral(percept));
-		
+
 		return ret;
 	}
 	

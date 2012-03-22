@@ -11,6 +11,8 @@ contact(userAgent).
 my_service(travel).
 my_service(train).
 
+fare(turista).
+
 /************** Plans *****************/
 
 /* Introduce myself to the user agent */
@@ -35,14 +37,14 @@ my_service(train).
 @findTravel2 
 +!find(travel, Query) : not canFindTravel(Query) & delay(Query)
 	<-	-delay(Query);
-		.print("Not enought data. Lets ask!").
+		.print("Not enought data. TODO:Lets ask!").
 
 @findTravel3
 +!find(travel, Query) : canFindTravel(Query)
 	<- 	?location(to, To);
 		?location(from, From);
 		?date(departure, Day, Month, Year);
-		findTravel(From, To, Day, Month, Year);
+		findTravel(Query,From, To, Day, Month, Year);
 		.print("ok").
 
 @findTravelFailureRety
@@ -53,8 +55,23 @@ my_service(train).
 	<-  .print("Problema al encontrar viajes:", Msg);
 		!findTravel(Query).    
 
+  
++journey(From, To, Departure, Arrival, fare(FName, FPrice))[query(Query), source(percept)] 
+	:	fare(FName)
+	<-	+journey(From, To, Departure, Arrival, fare(FName, FPrice))[query(Query)]. //note it down
+	
++journey(From, To, Departure, Arrival, fare(FName, FPrice))[query(Query), source(percept)]
+	:	~fare(FName)
+	<-	true. // skip this
+	
++journey(From, To, Departure, Arrival, fare(FName, FPrice))[query(Query), source(percept)]
+	: not fare(_) & not ~fare(FName)	// no restrictions, so note them all down
+	<-	+journey(From, To, Departure, Arrival, fare(FName, FPrice))[query(Query)].
+
 
 /* log results */
 @log_the_journey
-+journey(From, To, Departure, Arrival, Fares) : true 
-	<- .print("Travel found: From ", From,"<", Departure, "> to ", To, "<", Arrival, "> for ", Fares).
++journey(From, To, Departure, Arrival, fare(FName, FPrice))[query(Query), source(percept)] 
+	: 	true 
+	<- 	.print("Discard travel : From ", From,"<", Departure, "> to ", To, "<", Arrival, "> for ", Fares).
+		

@@ -5,6 +5,7 @@ package es.upm.dit.gsi.sojason.beans;
 
 import jason.asSyntax.Literal;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,13 @@ import java.util.Map;
 import es.upm.dit.gsi.jason.utils.NotationUtils;
 
 /**
- * @author miguel
+ * 
+ * Project: SOJA
+ * Package: es.upm.dit.gsi.sojason.beans
+ * Class: Journey
+ *
+ * @author Miguel Coronado (miguelcb@dit.upm.es)
+ * @version Mar 22, 2012
  *
  */
 public class Journey implements Perceptable{
@@ -37,7 +44,10 @@ public class Journey implements Perceptable{
 	
 	/** The fee map that contains the different available fee */
 	private Map<String, String> fares;
-
+	
+	/** The query id. It is an annotation, it is not mandatory */
+	private String queryid = null;
+	
 	/**
 	 * @return the departureTime
 	 */
@@ -122,6 +132,20 @@ public class Journey implements Perceptable{
 		this.fares = fares;
 	}
 	
+	/**
+	 * @return the queryid
+	 */
+	public String getQueryid() {
+		return queryid;
+	}
+
+	/**
+	 * @param queryid the queryid to set
+	 */
+	public void setQueryid(String queryid) {
+		this.queryid = queryid;
+	}
+	
 	/** Textual representation of the journey. Use for debuging purposes inly.*/
 	public String toString() {
 		
@@ -144,41 +168,42 @@ public class Journey implements Perceptable{
 	}
 	
 	/**
-	 * journey(madrid, ciudad_real, 10.15, 11.5, [fare(turista, 22.5), fare(preferente, 35)]
-	 * journey(madrid, ciudad_real, time(10,15), time(11,5), [fare(turista, 22.5), fare(preferente, 35)]
+	 * <p>Generates a beliefs representation of the </code>Journey</code>.
+	 * In the current implementation of {@link #toPercepts()}, the journey 
+	 * is represented by several beliefs, all of them with the same value 
+	 * in the from, to, departure and arrival time fields, but different 
+	 * fares. The exact representation is presented below:</p>
 	 * 
-	 * @return
+	 * <ul>
+	 * 	 <li>journey(madrid, ciudad_real, time(10,15), time(11,5), fare(turista, 22.5))</li>
+	 *   <li>journey(madrid, ciudad_real, time(10,15), time(11,5), fare(preferente, 35))</li>
+	 * </ul>
+	 * 
+	 * <p>Notice that in the current implementation the <code>Duration</code> 
+	 * attribute is skiped.</p>
+	 * 
+	 * @return The list with the percepts or an empty list if no fare is given
 	 */
 	public List<Literal> toPercepts() {
-		
-//		if (this.fares.size() == 0){ return null; }
-//		
-//		String percept = "journey(";
-//		percept = percept.concat(this.origin);
-//		percept = percept.concat(", ");
-//		percept = percept.concat(this.destination);
-//		percept = percept.concat(", ");
-//		percept = percept.concat(this.departureTime);
-//		percept = percept.concat(", ");
-//		percept = percept.concat(this.arrivalTime);
-//		
-//		percept = percept.concat(", [");
-//		for(String fareName : fares.keySet()) {
-//			percept = percept.concat("fare(");
-//			percept = percept.concat(fareName);
-//			percept = percept.concat(", ");
-//			percept = percept.concat(fares.get(fareName));
-//			percept = percept.concat("), ");
-//		}
-//		percept = percept.substring(0, percept.lastIndexOf(","));
-//		percept = percept.concat("])");
-//		
-//		LinkedList<Literal> ret = new LinkedList<Literal>();
-//		ret.add(Literal.parseLiteral(percept));
-//		
-//		return ret;
-		
-		if (this.fares.size() == 0){ return null; }
+		if (this.fares.size() == 0){ return new LinkedList<Literal>(); }
+		return unfoldPercepts();
+		//return foldPercepts();
+	}
+
+	/**
+	 * <p>Generates a beliefs representation of the </code>Journey</code>.
+	 * The journey is represented by a single belief, that contains all the 
+	 * fares as an array. The exact representation is presented below</p>
+	 * 
+	 * <ul>
+	 * 	 <li>journey(madrid, ciudad_real, time(10,15), time(11,5), [fare(turista, 22.5), fare(preferente, 35)])</li>
+	 * </ul>
+	 * 
+	 * @return	List with literals that represent the journey. With a folded 
+	 * 			percept only one percept will be included in the list.
+	 */
+	@SuppressWarnings("unused")
+	private List<Literal> foldPercepts() {
 		
 		String percept = "journey(";
 		percept = percept.concat(NotationUtils.compact(this.origin));
@@ -208,10 +233,98 @@ public class Journey implements Perceptable{
 		percept = percept.substring(0, percept.lastIndexOf(","));
 		percept = percept.concat("])");
 		
+		// queryid annotation
+		percept = percept.concat("[query(");
+		percept = percept.concat(this.getQueryid());
+		percept = percept.concat(")]");
+		
+		
 		LinkedList<Literal> ret = new LinkedList<Literal>();
 		ret.add(Literal.parseLiteral(percept));
 		
 		return ret;
 	}
+	
+	/**
+	 * <p>Generates a beliefs representation of the </code>Journey</code>.
+	 * The journey is represented by several beliefs, all of them with the 
+	 * same value in the from, to, departure and arrival time fields, but 
+	 * different fares. The exact representation is presented below:</p>
+	 * 
+	 * <ul>
+	 * 	 <li>journey(madrid, ciudad_real, time(10,15), time(11,5), fare(turista, 22.5))</li>
+	 *   <li>journey(madrid, ciudad_real, time(10,15), time(11,5), fare(preferente, 35))</li>
+	 * </ul>
+	 * 
+	 * TODO: when it is unfloded, it might be usefull if it includes, as 
+	 * annotation, an id that represents the journey, to easily join the 
+	 * literals.
+	 *  
+	 * @return	List with literals that represent the journey. All of the 
+	 * 			literals will have the same, from, to, departure and arrival 
+	 * 			time value, but different fares.
+	 */
+	private List<Literal> unfoldPercepts() {
 
+		LinkedList<Literal> ret = new LinkedList<Literal>();// returning list
+		
+		String percept = "journey(";
+		percept = percept.concat(NotationUtils.compact(this.origin));
+		percept = percept.concat(", ");
+		percept = percept.concat(NotationUtils.compact(this.destination));
+		
+		percept = percept.concat(", time(");
+		String digits[] = this.departureTime.split("[\\x2E\\x3A]"); // [.:]
+		percept = percept.concat(digits[0]);
+		percept = percept.concat(", ");
+		percept = percept.concat(digits[1]);
+		
+		percept = percept.concat("), time(");
+		digits = this.arrivalTime.split("[\\x2E\\x3A]"); // [.:]
+		percept = percept.concat(digits[0]);
+		percept = percept.concat(", ");
+		percept = percept.concat(digits[1]);
+		
+		percept = percept.concat("), ");
+		
+		for(String fareName : fares.keySet()) {
+			String perceptFare = percept.concat("fare(");
+			perceptFare = perceptFare.concat(NotationUtils.compact(fareName));
+			perceptFare = perceptFare.concat(", ");
+			perceptFare = perceptFare.concat(fares.get(fareName));
+			perceptFare = perceptFare.concat(") ");
+			perceptFare = perceptFare.concat(")"); // close journey
+			
+			// queryid annotation
+			perceptFare = perceptFare.concat("[query(");
+			perceptFare = perceptFare.concat(this.getQueryid());
+			perceptFare = perceptFare.concat(")]");
+			
+			ret.add(Literal.parseLiteral(perceptFare));
+		}
+		
+		return ret;
+	}
+	
+	/** Try toPercepts method */
+	public static void main(String[]args) {
+		Journey j = new Journey();
+		j.setArrivalTime("10.00");
+		j.setDepartureTime("8:50");
+		j.setDestination("ciudad real");
+		j.setDuration("");
+		j.setOrigin("madrid");
+		j.setQueryid("123456");
+		
+		Map<String, String> fares = new HashMap<String, String>();
+		fares.put("turista", "22.5");
+		fares.put("preferente", "38.5");
+		fares.put("turista niño", "16.0");
+		fares.put("preferente niño", "28.5");
+		j.setFares(fares);
+		
+		System.out.println(j.toPercepts());
+//		System.out.println(j.foldPercepts());
+	}
+	
 }

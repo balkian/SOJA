@@ -82,6 +82,7 @@ public class Web40Model extends SOModel{
 	 */
 	public boolean findTravel (String agName, Collection<Term> params) {
 		
+		logger.info("Entering findTravel...");
 		try{
 			String[] strParams = CollectionUtils.toStringArray(params);
 			Collection<Literal> serviceData = renfeScrapper.call(strParams);
@@ -91,6 +92,7 @@ public class Web40Model extends SOModel{
 			this.setDataInbox(agName, serviceData);
 		} 
 		catch (Exception e){ return false; }
+		logger.info("Scraping completed successfully");
 		return true;
 		
 	}

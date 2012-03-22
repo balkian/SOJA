@@ -46,15 +46,30 @@ public class RenfeScrapper implements WebServiceConnector {
 			return null;
 		}
 		try {
-			List<Perceptable> schedule = getSchedule  ( params[0].toString(), 
-														params[1].toString(), 
+			String queryid = params[0].toString();
+			List<Perceptable> schedule = getSchedule  ( params[1].toString(), 
 														params[2].toString(), 
 														params[3].toString(), 
-														params[4].toString());
+														params[4].toString(), 
+														params[5].toString());
 			
+			System.out.println(">>>" + schedule);
 			// prepare response
 			Collection<Literal> res =  new LinkedList<Literal>();
 			for (Perceptable travel : schedule){
+				System.out.println(">>>" + travel);
+				if(travel instanceof Journey){
+					((Journey)travel).setQueryid(queryid); // add the query id
+				}
+				System.out.println(">>>" + travel.toPercepts());
+				
+				
+				List<Literal> list = travel.toPercepts();
+				for(Literal l : list){
+					System.out.println("Anota" + l.getAnnots());
+				}
+				
+				
 				res.addAll(travel.toPercepts());
 			}
 			return res;
@@ -67,7 +82,7 @@ public class RenfeScrapper implements WebServiceConnector {
 	}
 
 	public boolean validateParams(String... params) {
-		if(params.length != 5){
+		if(params.length != 6){
 			return false;
 		}
 		return true;

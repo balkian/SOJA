@@ -6,7 +6,6 @@ import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_DATES_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_DATES_RETURN_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_DOMAINS_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_FROM_NODENAME;
-import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_TO_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_LOCATIONS_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_MAX_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_MIN_NODENAME;
@@ -15,6 +14,7 @@ import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_PRICE_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_TIME_DEPART_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_TIME_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_TIME_RETURN_NODENAME;
+import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_TO_NODENAME;
 import static es.upm.dit.gsi.sojason.services.nlu.NLUModel.JSON_TRAVEL_NODENAME;
 import jason.asSyntax.Literal;
 
@@ -32,7 +32,6 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import es.upm.dit.gsi.jason.utils.NotationUtils;
-import es.upm.dit.gsi.sojason.Web40Model;
 import es.upm.dit.gsi.sojason.beans.NLUTravel;
 import es.upm.dit.gsi.sojason.services.WebServiceConnector;
 

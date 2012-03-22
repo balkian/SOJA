@@ -3,3 +3,5 @@ build.properties
 .project
 .settings/
 bin
+*.swp
+*.swo

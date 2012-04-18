@@ -98,7 +98,7 @@ public class SocketIOConnector implements AsyncWebServiceConnector{
 					model.setDataInbox(agName, lit);
 					logger.info("DataInbox set");
 				}
-			}, new JSONObject().put("Hello", "Planeta"));
+			}, new JSONObject().put("Sending", "From Jason"));
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

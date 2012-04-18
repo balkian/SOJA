@@ -45,10 +45,10 @@ public class NotationUtils {
 		if (isValidAtom (str)) {return str;}
 		if (!isCompactable(str)) {return null;}
 		
+		str = str.toLowerCase();
 		str = str.replace("_", "___");
 		str = str.replace(" ", "_");
-		str = str.replace("ñ", "n");
-		return str.toLowerCase();
+		return str.replace("ñ", "n");
 	}
 	
 	/**

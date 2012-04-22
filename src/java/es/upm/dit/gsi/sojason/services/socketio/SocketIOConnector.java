@@ -10,8 +10,10 @@ import jason.asSyntax.Literal;
 import java.net.MalformedURLException;
 import java.util.logging.Logger;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import es.upm.dit.gsi.jason.utils.CollectionUtils;
 import es.upm.dit.gsi.sojason.SOModel;
 import es.upm.dit.gsi.sojason.services.AsyncWebServiceConnector;
 
@@ -94,9 +96,10 @@ public class SocketIOConnector implements AsyncWebServiceConnector{
 				@Override
 				public void ack(Object... args) {
 					logger.info("Package ack'ed");
-					Literal lit = Literal.parseLiteral("success(yes)");
+					String str = CollectionUtils.toPercepts(args);
+					Literal lit = Literal.parseLiteral(str);
 					model.setDataInbox(agName, lit);
-					logger.info("DataInbox set");
+					logger.info("DataInbox set to "+str);
 				}
 			}, new JSONObject().put("Sending", "From Jason"));
 		} catch (JSONException e) {

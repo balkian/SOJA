@@ -133,7 +133,7 @@ public abstract class CollectionUtils {
 	 * @return String Percept representation of the JSONArray
 	 */
 	
-	private static String toPerceptsArray(JSONArray jsa){
+	private static String toPerceptsJSONArray(JSONArray jsa){
 		StringBuilder sb = new StringBuilder();
 		int top = jsa.length();
 		int topm = top-1;
@@ -144,6 +144,30 @@ public abstract class CollectionUtils {
 			}catch(JSONException ex){
 				ex.printStackTrace();
 			}
+			if(i<topm){
+				sb.append(",");
+			}
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+	
+	/**
+	 * 
+	 * @param jsa Array to be converted
+	 * @return String Percept representation of the JSONArray
+	 */
+	
+	private static String toPerceptsArray(Object[] jsa){
+		if(jsa.length<2){
+			return toPercepts(jsa[0]);
+		}
+		StringBuilder sb = new StringBuilder();
+		int top = jsa.length;
+		int topm = top-1;
+		sb.append("[");
+		for(int i=0;i<jsa.length;i++){
+			sb.append(toPercepts(jsa[i]));
 			if(i<topm){
 				sb.append(",");
 			}
@@ -172,8 +196,12 @@ public abstract class CollectionUtils {
 	 */
 	
 	public static String toPercepts(Object obj){
+		if(obj instanceof Object[]){
+			return toPerceptsArray((Object[]) obj);
+			
+		}
 		if(obj instanceof JSONArray){
-			return toPerceptsArray((JSONArray) obj);
+			return toPerceptsJSONArray((JSONArray) obj);
 		}
 		else if (obj instanceof JSONObject) {
 			return toPerceptsObject((JSONObject) obj);

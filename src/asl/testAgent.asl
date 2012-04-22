@@ -8,5 +8,5 @@
 		.wait(1000);
 		sendSocket("test","hola").
 		
-+success(yes): true
++success("yes"): true
 	<- .print("Succes!!!!!").

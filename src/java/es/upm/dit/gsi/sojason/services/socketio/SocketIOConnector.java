@@ -8,6 +8,7 @@ import io.socket.SocketIOException;
 import jason.asSyntax.Literal;
 
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import net.sf.json.JSONArray;
@@ -33,8 +34,11 @@ public class SocketIOConnector implements AsyncWebServiceConnector{
 	/** */
 	private Logger logger = Logger.getLogger("Web40SOJason." + SocketIOConnector.class.getName());
 	
-	private static SocketIO socket;
-	static IOCallback callback = new IOCallback() {
+	private SocketIO socket;
+	
+	private SOModel model;
+
+	IOCallback callback = new IOCallback() {
 
 		public void onMessage(JSONObject json, IOAcknowledge ack) {
 			System.out.println("Message:" + json.toString());
@@ -62,7 +66,20 @@ public class SocketIOConnector implements AsyncWebServiceConnector{
 
 		@Override
 		public void on(String event, IOAcknowledge ack, Object... args) {
-			
+			logger.info("Package ack'ed");
+			JSONObject jso = new JSONObject();
+			String name = (String) jso.get("id");
+			String agName = "";
+			if(agentsID.containsKey(name)){
+				agName = agentsID.get(name);
+			}
+			else if(agentsEvent.containsKey(event)){
+				agName = agentsEvent.get(event);
+			}
+			String str = CollectionUtils.toPercepts(jso);
+			Literal lit = Literal.parseLiteral(str);
+			model.setDataInbox(agName, lit);
+			logger.info("DataInbox set to "+str);
 		}
 
 		@Override
@@ -71,12 +88,18 @@ public class SocketIOConnector implements AsyncWebServiceConnector{
 			
 		}
 	};
+	private HashMap<String,String> agentsID;
+	private HashMap<String,String> agentsEvent;
 	
 	
 	//TODO Remove try-catch
 	/** Constructor */
-	public SocketIOConnector(String serviceUrl) {
+	public SocketIOConnector(String serviceUrl, SOModel model) {
+		this.model = model;
 		this.serviceUrl = serviceUrl;
+		this.agentsID = new HashMap<String,String>();
+		this.agentsEvent = new HashMap<String,String>();
+		
 		
 		try {
 			socket = new SocketIO();
@@ -131,4 +154,48 @@ public class SocketIOConnector implements AsyncWebServiceConnector{
 		return true;
 	}
 	
+	
+	public void addAgentForID(String name, String id){
+		agentsID.put(name, id);
+	}
+	
+	public void removeAgentForID(String name){
+		agentsID.remove(name);
+	}
+	
+
+	public void removeAgentsForID(String id){
+		for(String key : agentsID.keySet()){
+			if(agentsID.get(key).equals(id)){
+				agentsID.remove(id);
+			}
+		}
+	}
+	public void addAgentForEvent(String name, String id){
+		agentsEvent.put(name, id);
+	}
+	
+	public void removeAgentForEvent(String name){
+		agentsEvent.remove(name);
+	}
+
+	public void removeAgentsForEvent(String id){
+		for(String key : agentsEvent.keySet()){
+			if(agentsEvent.get(key).equals(id)){
+				agentsEvent.remove(id);
+			}
+		}
+	}
+	public void removeAgentsByName(String name){
+		for(String key : agentsEvent.keySet()){
+			if(agentsEvent.get(key).equals(name)){
+				agentsEvent.remove(name);
+			}
+		}
+		for(String key : agentsID.keySet()){
+			if(agentsID.get(key).equals(name)){
+				agentsID.remove(name);
+			}
+		}
+	}
 }
